@@ -1,0 +1,35 @@
+name: Check Title and Set Label
+
+on:
+  pull_request_target:
+    types:
+      - edited
+
+jobs:
+  check-title-label:
+    runs-on: ubuntu-latest
+
+    permissions:
+      pull-requests: write
+      issues: write
+
+    steps:
+    - env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GH_REPO: ${{ github.repository }}
+        NUMBER: ${{ github.event.pull_request.number }}
+        TITLE: ${{ github.event.pull_request.title }}
+      run: |
+        if [[ "$TITLE" == "[WIP]"* ]]; then
+          # Remove "Ready for Review" label if it exists
+          gh issue edit $NUMBER --remove-label ":mag: Ready for Review" || true
+
+          # Add "WIP" label if it doesn't exist
+          gh issue edit $NUMBER --add-label ":construction: WIP"
+        else
+          # Remove "WIP" label if it exists
+          gh issue edit $NUMBER --remove-label ":construction: WIP"
+
+          # Add "Ready for Review" label if it doesn't exist
+          gh issue edit $NUMBER --add-label ":mag: Ready for Review" || true
+        fi
