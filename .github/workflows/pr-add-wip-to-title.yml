@@ -1,0 +1,24 @@
+name: Add WIP to PR Title
+
+on:
+  pull_request:
+    types: [opened, reopened]
+
+jobs:
+  prepend-wip:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Prepend [WIP] to PR title
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        PR_TITLE=$(jq -r .pull_request.title "$GITHUB_EVENT_PATH")
+        PR_NUMBER=$(jq -r .pull_request.number "$GITHUB_EVENT_PATH")
+        if [[ "$PR_TITLE" != "[WIP]"* ]]; then
+          NEW_TITLE="[WIP] $PR_TITLE"
+          gh pr edit $PR_NUMBER --title "$NEW_TITLE"
+        fi
