@@ -1,7 +1,7 @@
 name: Check Title and Set Label
 
 on:
-  pull_request_target:
+  pull_request:
     types:
       - edited
 
@@ -25,10 +25,10 @@ jobs:
           gh issue edit $NUMBER --remove-label ":mag: Ready for Review" || true
 
           # Add "WIP" label if it doesn't exist
-          gh issue edit $NUMBER --add-label ":construction: WIP"
+          gh issue edit $NUMBER --add-label ":construction: WIP" || true
         else
           # Remove "WIP" label if it exists
-          gh issue edit $NUMBER --remove-label ":construction: WIP"
+          gh issue edit $NUMBER --remove-label ":construction: WIP" || true
 
           # Add "Ready for Review" label if it doesn't exist
           gh issue edit $NUMBER --add-label ":mag: Ready for Review" || true
