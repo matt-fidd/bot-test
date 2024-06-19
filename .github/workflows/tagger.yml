@@ -24,10 +24,6 @@ on:
   pull_request_review:
     types: [submitted, edited, dismissed]
 
-concurrency:
-  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: true
-
 jobs:
   manage-review:
     runs-on: ubuntu-latest
