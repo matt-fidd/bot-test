@@ -1,0 +1,25 @@
+name: Random Fail Check
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  random-fail:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Random fail step
+      run: |
+        echo "Determining if the job will fail..."
+        RANDOM_NUMBER=$(awk -v min=0 -v max=1 'BEGIN{srand(); print min+rand()*(max-min)}')
+        echo "Random number: $RANDOM_NUMBER"
+        if (( $(echo "$RANDOM_NUMBER < 0.5" | bc -l) )); then
+          echo "Job will fail"
+          exit 1
+        else
+          echo "Job will pass"
+        fi
